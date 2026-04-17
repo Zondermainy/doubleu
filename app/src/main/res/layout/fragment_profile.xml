@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="20dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_profile"
+            android:layout_marginTop="20dp"
+            app:tint="#D0D0D0" />
+
+        <TextView
+            android:id="@+id/tv_member_since"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="В приложении с 11.04.2026"
+            android:textColor="#808080"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Карточка статистики -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/bg_stats_card"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="Выполнено задач"
+                    android:textColor="#000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_tasks_completed_week"
+                    android:text="0 на этой неделе"
+                    android:textColor="#808080"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginVertical="12dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Задач создано"
+                        android:textColor="#000000"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tv_tasks_created_total"
+                        android:text="0 всего"
+                        android:textColor="#808080"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0"
+                        android:layout_marginVertical="12dp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="Текущий стрик"
+                            android:textColor="#000000"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/tv_current_streak"
+                            android:text="0 дней"
+                            android:textColor="#808080"
+                            android:layout_alignParentEnd="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <!-- Дополнительная статистика (тренировки, калории) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_stats_card"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:text="Выполнено тренировок"
+                                android:textColor="#000000"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            <TextView
+                                android:id="@+id/tv_workouts_completed_total"
+                                android:text="0 всего"
+                                android:textColor="#808080"
+                                android:layout_alignParentEnd="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#E0E0E0"
+                                android:layout_marginVertical="12dp" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:text="Сожжено калорий"
+                                    android:textColor="#000000"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/tv_calories_total"
+                                    android:text="0 ккал"
+                                    android:textColor="#808080"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                </RelativeLayout>
+                            </LinearLayout>
+
+                            <!-- Достижения -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Достижения"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="30dp"
+                                android:layout_gravity="start" />
+
+                            <TextView
+                                android:id="@+id/tv_achievements"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="• Первые шаги (Создано 10 задач)\n• Стайер (Стрик 7 дней)\n• Мастер планирования"
+                                android:textColor="#505050"
+                                android:layout_marginTop="10dp"
+                                android:lineSpacingExtra="8dp" />
+
+                            <!-- Кнопки экспорта / импорта -->
+                            <Button
+                                android:id="@+id/btn_export"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="24dp"
+                                android:text="Экспортировать данные"
+                                android:textAllCaps="false" />
+
+                            <Button
+                                android:id="@+id/btn_import"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Импортировать данные"
+                                android:textAllCaps="false" />
+
+                            </LinearLayout>
+                        </ScrollView>
