@@ -7,9 +7,7 @@ import androidx.room.PrimaryKey
 data class WorkoutEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val name: String,
-    val durationMinutes: Int,
-    val caloriesBurned: Int? = null,
-    val isCompleted: Boolean = false,
-    val date: String // "yyyy-MM-dd"
+    val name: String, // Название тренировки
+    val date: String, // "yyyy-MM-dd"
+    val isCompleted: Boolean = false // Тренировка завершена
 )

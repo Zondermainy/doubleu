@@ -40,6 +40,7 @@ class TodayFragment : Fragment() {
         repository = AppRepository(
             database.taskDao(),
             database.workoutDao(),
+            database.workoutExerciseDao(),
             database.dailyHistoryDao(),
             database.exerciseDao(),
             database.trainingPlanDao()
@@ -86,14 +87,7 @@ class TodayFragment : Fragment() {
                 repository.insertTask(task4)
                 repository.insertTask(task5)
 
-                // Тренировки
-                val workout1 = WorkoutEntity(name = "Отжимания", durationMinutes = 15, caloriesBurned = 120, isCompleted = true, date = today)
-                val workout2 = WorkoutEntity(name = "Пресс", durationMinutes = 10, caloriesBurned = 80, isCompleted = true, date = today)
-                val workout3 = WorkoutEntity(name = "Приседания", durationMinutes = 20, caloriesBurned = 150, isCompleted = true, date = yesterday)
-
-                repository.insertWorkout(workout1)
-                repository.insertWorkout(workout2)
-                repository.insertWorkout(workout3)
+                // Тренировки (тестовые данные больше не добавляем - новая структура)
 
                 Toast.makeText(requireContext(), "Тестовые данные добавлены! Проверьте Календарь и Профиль.", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {

@@ -34,6 +34,7 @@ class CalendarFragment : Fragment() {
         val repository = AppRepository(
             database.taskDao(),
             database.workoutDao(),
+            database.workoutExerciseDao(),
             database.dailyHistoryDao(),
             database.exerciseDao(),
             database.trainingPlanDao()

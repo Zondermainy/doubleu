@@ -29,7 +29,7 @@ class ProfileViewModel(private val repository: AppRepository) : ViewModel() {
             val totalTasks = repository.getTotalTasksCreated()
             val completedTasks = repository.getCompletedTasksCount()
             val completedWorkouts = repository.getCompletedWorkoutsCount()
-            val totalCalories = repository.getTotalCaloriesBurned()
+            val totalCalories = 0 // Убрано - больше не отслеживается
 
             // Недельная статистика
             val weekStart = getDateDaysAgo(6)

@@ -8,6 +8,7 @@ import org.json.JSONArray
 class AppRepository(
     private val taskDao: TaskDao,
     private val workoutDao: WorkoutDao,
+    private val workoutExerciseDao: WorkoutExerciseDao,
     private val historyDao: DailyHistoryDao,
     private val exerciseDao: ExerciseDao,
     private val trainingPlanDao: TrainingPlanDao
@@ -16,6 +17,8 @@ class AppRepository(
     // ===== Задачи =====
     fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAllTasks()
     fun getTasksByDate(date: String): Flow<List<TaskEntity>> = taskDao.getTasksByDate(date)
+    fun getTasksWithoutTimeByDate(date: String): Flow<List<TaskEntity>> = taskDao.getTasksWithoutTimeByDate(date)
+    fun getTasksWithTimeByDate(date: String): Flow<List<TaskEntity>> = taskDao.getTasksWithTimeByDate(date)
 
     suspend fun insertTask(task: TaskEntity): Long = withContext(Dispatchers.IO) {
         val id = taskDao.insert(task)
@@ -41,6 +44,7 @@ class AppRepository(
     // ===== Тренировки =====
     fun getAllWorkouts(): Flow<List<WorkoutEntity>> = workoutDao.getAllWorkouts()
     fun getWorkoutsByDate(date: String): Flow<List<WorkoutEntity>> = workoutDao.getWorkoutsByDate(date)
+    fun getWorkoutsByDateOrdered(date: String): Flow<List<WorkoutEntity>> = workoutDao.getWorkoutsByDateOrdered(date)
 
     suspend fun insertWorkout(workout: WorkoutEntity): Long = withContext(Dispatchers.IO) {
         val id = workoutDao.insert(workout)
@@ -62,6 +66,44 @@ class AppRepository(
         workoutDao.updateCompletion(workoutId, completed)
         updateDailyHistoryForDate(date)
     }
+
+    // ===== Упражнения в тренировке =====
+    fun getExercisesForWorkout(workoutId: Long): Flow<List<WorkoutExerciseEntity>> =
+        workoutExerciseDao.getExercisesForWorkout(workoutId)
+
+    suspend fun getExercisesForWorkoutList(workoutId: Long): List<WorkoutExerciseEntity> =
+        workoutExerciseDao.getExercisesForWorkoutList(workoutId)
+
+    suspend fun getWorkoutProgress(workoutId: Long): Pair<Int, Int> {
+        val total = workoutExerciseDao.getTotalExercisesCount(workoutId)
+        val completed = workoutExerciseDao.getCompletedExercisesCount(workoutId)
+        return Pair(completed, total)
+    }
+
+    suspend fun addExerciseToWorkout(workoutExercise: WorkoutExerciseEntity): Long =
+        withContext(Dispatchers.IO) {
+            workoutExerciseDao.insert(workoutExercise)
+        }
+
+    suspend fun addExercisesToWorkout(workoutExercises: List<WorkoutExerciseEntity>) =
+        withContext(Dispatchers.IO) {
+            workoutExerciseDao.insertAll(workoutExercises)
+        }
+
+    suspend fun setExerciseCompleted(exerciseId: Long, completed: Boolean) =
+        withContext(Dispatchers.IO) {
+            workoutExerciseDao.updateCompletion(exerciseId, completed)
+        }
+
+    suspend fun removeExerciseFromWorkout(workoutExercise: WorkoutExerciseEntity) =
+        withContext(Dispatchers.IO) {
+            workoutExerciseDao.delete(workoutExercise)
+        }
+
+    suspend fun deleteAllExercisesForWorkout(workoutId: Long) =
+        withContext(Dispatchers.IO) {
+            workoutExerciseDao.deleteAllForWorkout(workoutId)
+        }
 
     // ===== История дня =====
     suspend fun getHistoryForDate(date: String): DailyHistoryEntity? = withContext(Dispatchers.IO) {
@@ -93,10 +135,18 @@ class AppRepository(
     suspend fun getCompletedTasksCountForWeek(start: String, end: String): Int =
         taskDao.getCompletedTasksCountForWeek(start, end) ?: 0
     suspend fun getCompletedWorkoutsCount(): Int = workoutDao.getCompletedWorkoutsCount() ?: 0
-    suspend fun getTotalCaloriesBurned(): Int = workoutDao.getTotalCaloriesBurned() ?: 0
 
     // ===== Упражнения =====
     fun getAllExercises(): Flow<List<ExerciseEntity>> = exerciseDao.getAllExercises()
+
+    suspend fun getAllExercisesSync(): List<ExerciseEntity> = withContext(Dispatchers.IO) {
+        exerciseDao.getAllExercisesList()
+    }
+
+    suspend fun getAllTrainingPlansSync(): List<TrainingPlanEntity> = withContext(Dispatchers.IO) {
+        trainingPlanDao.getAllPlansList()
+    }
+
     fun getExercisesByMuscleGroup(muscleGroup: String): Flow<List<ExerciseEntity>> =
         exerciseDao.getExercisesByMuscleGroup(muscleGroup)
 
@@ -120,6 +170,10 @@ class AppRepository(
     fun getAllTrainingPlans(): Flow<List<TrainingPlanEntity>> = trainingPlanDao.getAllPlans()
     fun getExercisesForPlan(planId: Long): Flow<List<ExerciseWithDetails>> =
         trainingPlanDao.getExercisesForPlan(planId)
+
+    suspend fun getExercisesForPlanSuspend(planId: Long): List<ExerciseWithDetails> = withContext(Dispatchers.IO) {
+        trainingPlanDao.getExercisesForPlanSuspend(planId)
+    }
 
     suspend fun getTrainingPlanById(id: Long): TrainingPlanEntity? = withContext(Dispatchers.IO) {
         trainingPlanDao.getPlanById(id)

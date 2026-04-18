@@ -9,6 +9,9 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises ORDER BY muscleGroup, name")
     fun getAllExercises(): Flow<List<ExerciseEntity>>
 
+    @Query("SELECT * FROM exercises ORDER BY muscleGroup, name")
+    suspend fun getAllExercisesList(): List<ExerciseEntity>
+
     @Query("SELECT * FROM exercises WHERE id = :id")
     suspend fun getExerciseById(id: Long): ExerciseEntity?
 

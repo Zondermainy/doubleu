@@ -10,8 +10,11 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts ORDER BY id DESC")
     fun getAllWorkouts(): Flow<List<WorkoutEntity>>
 
-    @Query("SELECT * FROM workouts WHERE date = :date")
+    @Query("SELECT * FROM workouts WHERE date = :date ORDER BY id DESC")
     fun getWorkoutsByDate(date: String): Flow<List<WorkoutEntity>>
+
+    @Query("SELECT * FROM workouts WHERE date = :date ORDER BY id ASC")
+    fun getWorkoutsByDateOrdered(date: String): Flow<List<WorkoutEntity>>
 
     // ===== Suspend-запросы для разовых операций =====
     @Query("SELECT * FROM workouts WHERE date = :date")
@@ -22,9 +25,6 @@ interface WorkoutDao {
 
     @Query("SELECT COUNT(*) FROM workouts WHERE isCompleted = 1")
     suspend fun getCompletedWorkoutsCount(): Int?
-
-    @Query("SELECT SUM(caloriesBurned) FROM workouts WHERE isCompleted = 1")
-    suspend fun getTotalCaloriesBurned(): Int?
 
     // ===== Операции вставки/обновления/удаления =====
     @Insert(onConflict = OnConflictStrategy.REPLACE)

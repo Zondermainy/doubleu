@@ -9,6 +9,9 @@ interface TrainingPlanDao {
     @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
     fun getAllPlans(): Flow<List<TrainingPlanEntity>>
 
+    @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
+    suspend fun getAllPlansList(): List<TrainingPlanEntity>
+
     @Query("SELECT * FROM training_plans WHERE id = :id")
     suspend fun getPlanById(id: Long): TrainingPlanEntity?
 
@@ -21,6 +24,16 @@ interface TrainingPlanDao {
         ORDER BY tpe.orderIndex
     """)
     fun getExercisesForPlan(planId: Long): Flow<List<ExerciseWithDetails>>
+
+    @Query("""
+        SELECT e.id, e.name, e.description, e.muscleGroup, e.isDefault,
+               tpe.sets, tpe.reps
+        FROM training_plan_exercises tpe
+        INNER JOIN exercises e ON tpe.exerciseId = e.id
+        WHERE tpe.planId = :planId
+        ORDER BY tpe.orderIndex
+    """)
+    suspend fun getExercisesForPlanSuspend(planId: Long): List<ExerciseWithDetails>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(plan: TrainingPlanEntity): Long

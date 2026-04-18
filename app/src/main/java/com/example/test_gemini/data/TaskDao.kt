@@ -10,8 +10,14 @@ interface TaskDao {
     @Query("SELECT * FROM tasks ORDER BY id DESC")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
-    @Query("SELECT * FROM tasks WHERE date = :date")
+    @Query("SELECT * FROM tasks WHERE date = :date ORDER BY id DESC")
     fun getTasksByDate(date: String): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE date = :date AND time IS NULL ORDER BY id DESC")
+    fun getTasksWithoutTimeByDate(date: String): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE date = :date AND time IS NOT NULL ORDER BY time ASC, endTime ASC")
+    fun getTasksWithTimeByDate(date: String): Flow<List<TaskEntity>>
 
     // ===== Suspend-запросы для разовых операций =====
     @Query("SELECT * FROM tasks WHERE date = :date")

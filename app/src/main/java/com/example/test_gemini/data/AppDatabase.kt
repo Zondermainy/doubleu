@@ -13,17 +13,19 @@ import kotlinx.coroutines.launch
     entities = [
         TaskEntity::class,
         WorkoutEntity::class,
+        WorkoutExerciseEntity::class,
         DailyHistoryEntity::class,
         ExerciseEntity::class,
         TrainingPlanEntity::class,
         TrainingPlanExerciseEntity::class
     ],
-    version = 2,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
     abstract fun workoutDao(): WorkoutDao
+    abstract fun workoutExerciseDao(): WorkoutExerciseDao
     abstract fun dailyHistoryDao(): DailyHistoryDao
     abstract fun exerciseDao(): ExerciseDao
     abstract fun trainingPlanDao(): TrainingPlanDao

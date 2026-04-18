@@ -10,5 +10,7 @@ data class TaskEntity(
     val title: String,
     val description: String? = null,
     val isCompleted: Boolean = false,
-    val date: String // формат "yyyy-MM-dd" – дата, на которую назначена задача
+    val date: String, // формат "yyyy-MM-dd" – дата, на которую назначена задача
+    val time: String? = null, // формат "HH:mm" – время начала
+    val endTime: String? = null // формат "HH:mm" – время окончания (для интервала)
 )
