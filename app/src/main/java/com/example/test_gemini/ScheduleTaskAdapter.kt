@@ -30,16 +30,19 @@ class ScheduleTaskAdapter(
 
     inner class ScheduleTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvTime: TextView = itemView.findViewById(R.id.tv_task_time)
+        private val tvEndTime: TextView = itemView.findViewById(R.id.tv_end_time)
         private val cbCompleted: CheckBox = itemView.findViewById(R.id.cb_schedule_completed)
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_schedule_title)
         private val tvDescription: TextView = itemView.findViewById(R.id.tv_schedule_description)
         private val btnDelete: ImageButton = itemView.findViewById(R.id.btn_delete_schedule)
 
         fun bind(task: TaskEntity) {
-            tvTime.text = if (task.endTime != null) {
-                "${task.time} - ${task.endTime}"
+            tvTime.text = task.time ?: ""
+            if (task.endTime != null) {
+                tvEndTime.text = task.endTime
+                tvEndTime.visibility = View.VISIBLE
             } else {
-                task.time ?: ""
+                tvEndTime.visibility = View.GONE
             }
             tvTitle.text = task.title
             tvDescription.text = task.description ?: ""

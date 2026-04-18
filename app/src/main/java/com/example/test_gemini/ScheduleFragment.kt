@@ -132,6 +132,10 @@ class ScheduleFragment : Fragment() {
                         Toast.makeText(context, "Выберите время начала и окончания", Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
+                    if (startTime!!.compareTo(endTime!!) > 0) {
+                        Toast.makeText(context, "Время окончания должно быть позже времени начала", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
                     addTask(title, description, startTime!!, endTime!!)
                 } else {
                     if (selectedTime == null) {
@@ -237,6 +241,14 @@ class ScheduleFragment : Fragment() {
                 if (title.isEmpty()) return@setPositiveButton
 
                 if (isInterval) {
+                    if (startTime == null || endTime == null) {
+                        Toast.makeText(context, "Выберите время начала и окончания", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+                    if (startTime!!.compareTo(endTime!!) > 0) {
+                        Toast.makeText(context, "Время окончания должно быть позже времени начала", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
                     updateTask(task, title, description, startTime, endTime)
                 } else {
                     updateTask(task, title, description, selectedTime)
@@ -263,6 +275,10 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun addTask(title: String, description: String, time: String, endTime: String? = null) {
+        if (endTime != null && time.compareTo(endTime) > 0) {
+            Toast.makeText(context, "Время окончания должно быть позже времени начала", Toast.LENGTH_SHORT).show()
+            return
+        }
         val today = dateFormat.format(Date())
         val task = TaskEntity(
             title = title,
@@ -279,6 +295,10 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun updateTask(task: TaskEntity, title: String, description: String, time: String?, endTime: String? = null) {
+        if (endTime != null && time != null && time.compareTo(endTime) > 0) {
+            Toast.makeText(context, "Время окончания должно быть позже времени начала", Toast.LENGTH_SHORT).show()
+            return
+        }
         val updatedTask = task.copy(
             title = title,
             description = description.ifEmpty { null },

@@ -1,13 +1,14 @@
 package com.example.test_gemini
 
+import android.animation.ValueAnimator
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.test_gemini.data.WorkoutItem
@@ -20,6 +21,7 @@ class WorkoutAdapter(
 ) : RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
     private var workouts: List<WorkoutItem> = emptyList()
+    private val expandedItems = mutableSetOf<Int>()
 
     fun submitList(list: List<WorkoutItem>) {
         workouts = list
@@ -33,13 +35,13 @@ class WorkoutAdapter(
     }
 
     override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
-        holder.bind(workouts[position])
+        holder.bind(workouts[position], position)
     }
 
     override fun getItemCount(): Int = workouts.size
 
     inner class WorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cbCompleted: CheckBox = itemView.findViewById(R.id.cb_workout_completed)
+        private val ivExpandArrow: ImageView = itemView.findViewById(R.id.iv_expand_arrow)
         private val tvName: TextView = itemView.findViewById(R.id.tv_workout_name)
         private val tvProgress: TextView = itemView.findViewById(R.id.tv_workout_progress)
         private val btnDelete: ImageButton = itemView.findViewById(R.id.btn_delete_workout)
@@ -54,13 +56,16 @@ class WorkoutAdapter(
             rvExercises.adapter = exerciseAdapter
         }
 
-        fun bind(workout: WorkoutItem) {
+        fun bind(workout: WorkoutItem, position: Int) {
             val w = workout.workout
             tvName.text = w.name
             tvProgress.text = "${workout.completedCount}/${workout.totalCount}"
 
-            cbCompleted.setOnCheckedChangeListener(null)
-            cbCompleted.isChecked = w.isCompleted
+            val isExpanded = expandedItems.contains(position)
+            rvExercises.visibility = if (isExpanded) View.VISIBLE else View.GONE
+
+            val targetRotation = if (isExpanded) 90 else 0
+            ivExpandArrow.rotation = targetRotation.toFloat()
 
             if (w.isCompleted) {
                 tvName.paintFlags = tvName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -72,11 +77,23 @@ class WorkoutAdapter(
 
             exerciseAdapter.submitList(workout.exercises)
 
-            cbCompleted.setOnCheckedChangeListener { _, isChecked ->
-                onWorkoutCheckChanged(workout, isChecked)
+            itemView.setOnClickListener {
+                val newExpanded = !expandedItems.contains(position)
+                if (newExpanded) {
+                    expandedItems.add(position)
+                } else {
+                    expandedItems.remove(position)
+                }
+
+                rvExercises.visibility = if (newExpanded) View.VISIBLE else View.GONE
+
+                ValueAnimator.ofFloat(ivExpandArrow.rotation, if (newExpanded) 90f else 0f).apply {
+                    duration = 200
+                    addUpdateListener { ivExpandArrow.rotation = it.animatedValue as Float }
+                    start()
+                }
             }
 
-            itemView.setOnClickListener { onWorkoutClick(workout) }
             btnDelete.setOnClickListener { onDeleteClick(workout) }
         }
     }
