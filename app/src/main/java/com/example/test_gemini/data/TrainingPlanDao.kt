@@ -12,6 +12,9 @@ interface TrainingPlanDao {
     @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
     suspend fun getAllPlansList(): List<TrainingPlanEntity>
 
+    @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
+    fun getAllPlansSync(): List<TrainingPlanEntity>
+
     @Query("SELECT * FROM training_plans WHERE id = :id")
     suspend fun getPlanById(id: Long): TrainingPlanEntity?
 

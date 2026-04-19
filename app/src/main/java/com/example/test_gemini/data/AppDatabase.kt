@@ -56,6 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
             INSTANCE?.let { database ->
                 CoroutineScope(Dispatchers.IO).launch {
                     populateDefaultExercises(database.exerciseDao())
+                    DefaultDataHelper.populateDefaultPlans(database.exerciseDao(), database.trainingPlanDao())
                 }
             }
         }

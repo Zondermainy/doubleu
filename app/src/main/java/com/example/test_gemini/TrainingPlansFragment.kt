@@ -29,9 +29,10 @@ class TrainingPlansFragment : Fragment() {
         val factory = NotesViewModelFactory(mainActivity.repository)
         viewModel = ViewModelProvider(requireActivity(), factory).get(NotesViewModel::class.java)
 
-        adapter = TrainingPlanAdapter { plan ->
-            showPlanDialog(plan)
-        }
+        adapter = TrainingPlanAdapter(
+            onItemClick = { plan -> showPlanDialog(plan) },
+            onDeleteClick = { plan -> showDeleteConfirmation(plan) }
+        )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_plans)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -70,7 +71,30 @@ class TrainingPlansFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(plan.name)
             .setMessage(plan.description ?: "Без описания")
-            .setPositiveButton("Закрыть", null)
+            .setPositiveButton("Показать упражнения") { _, _ ->
+                showPlanExercises(plan)
+            }
+            .setNegativeButton("Закрыть", null)
+            .show()
+    }
+
+    private fun showPlanExercises(plan: com.example.test_gemini.data.TrainingPlanEntity) {
+        val fragment = PlanExercisesFragment.newInstance(plan.id, plan.name)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun showDeleteConfirmation(plan: com.example.test_gemini.data.TrainingPlanEntity) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Удалить план")
+            .setMessage("Вы уверены, что хотите удалить план \"${plan.name}\"?")
+            .setPositiveButton("Удалить") { _, _ ->
+                viewModel.deletePlan(plan)
+                Toast.makeText(context, "План удалён", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Отмена", null)
             .show()
     }
 }

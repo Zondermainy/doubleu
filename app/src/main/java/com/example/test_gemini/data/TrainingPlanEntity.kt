@@ -9,5 +9,6 @@ data class TrainingPlanEntity(
     val id: Long = 0,
     val name: String,
     val description: String? = null,
+    val isDefault: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )
