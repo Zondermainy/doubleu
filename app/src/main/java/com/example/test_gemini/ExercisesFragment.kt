@@ -29,9 +29,10 @@ class ExercisesFragment : Fragment() {
         val factory = NotesViewModelFactory(mainActivity.repository)
         viewModel = ViewModelProvider(requireActivity(), factory).get(NotesViewModel::class.java)
 
-        adapter = ExerciseAdapter { exercise ->
-            showExerciseDialog(exercise)
-        }
+        adapter = ExerciseAdapter(
+            onItemClick = { exercise -> showExerciseDialog(exercise) },
+            onDeleteClick = { exercise -> showDeleteConfirmation(exercise) }
+        )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_exercises)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -73,6 +74,18 @@ class ExercisesFragment : Fragment() {
             .setTitle(exercise.name)
             .setMessage("${exercise.muscleGroup}\n\n${exercise.description}")
             .setPositiveButton("Закрыть", null)
+            .show()
+    }
+
+    private fun showDeleteConfirmation(exercise: com.example.test_gemini.data.ExerciseEntity) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Удалить упражнение")
+            .setMessage("Вы уверены, что хотите удалить \"${exercise.name}\"?")
+            .setPositiveButton("Удалить") { _, _ ->
+                viewModel.deleteExercise(exercise)
+                Toast.makeText(context, "Упражнение удалено", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Отмена", null)
             .show()
     }
 }

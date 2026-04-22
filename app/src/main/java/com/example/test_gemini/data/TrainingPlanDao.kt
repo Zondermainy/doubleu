@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TrainingPlanDao {
 
-    @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
+    @Query("SELECT * FROM training_plans ORDER BY createdAt ASC")
     fun getAllPlans(): Flow<List<TrainingPlanEntity>>
 
-    @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
+    @Query("SELECT * FROM training_plans ORDER BY createdAt ASC")
     suspend fun getAllPlansList(): List<TrainingPlanEntity>
 
-    @Query("SELECT * FROM training_plans ORDER BY createdAt DESC")
+    @Query("SELECT * FROM training_plans ORDER BY createdAt ASC")
     fun getAllPlansSync(): List<TrainingPlanEntity>
 
     @Query("SELECT * FROM training_plans WHERE id = :id")
