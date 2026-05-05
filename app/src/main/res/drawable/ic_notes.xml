@@ -1,5 +1,41 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="960" android:viewportWidth="960" android:width="24dp">
-      
-    <path android:fillColor="@android:color/white" android:pathData="M220,600L220,420L160,420L160,360L280,360L280,600L220,600ZM360,600L360,500Q360,483 371.5,471.5Q383,460 400,460L480,460L480,420L360,420L360,360L500,360Q517,360 528.5,371.5Q540,383 540,400L540,460Q540,477 528.5,488.5Q517,500 500,500L420,500L420,540L540,540L540,600L360,600ZM600,600L600,540L720,540L720,500L640,500L640,460L720,460L720,420L600,420L600,360L740,360Q757,360 768.5,371.5Q780,383 780,400L780,560Q780,577 768.5,588.5Q757,600 740,600L600,600Z"/>
-    
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="#000000">
+
+    <group
+        android:rotation="45"
+        android:pivotX="480"
+        android:pivotY="480">
+
+        <!-- Гриф (стал длиннее и чуть толще) -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M80,530L80,430L880,430L880,530Z"/>
+
+        <!-- Левая сторона (блины стали выше и шире) -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M350,750L250,750L250,210L350,210Z" /> <!-- Большой -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M250,680L160,680L160,280L250,280Z" /> <!-- Средний -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M160,620L90,620L90,340L160,340Z" />   <!-- Маленький -->
+
+        <!-- Правая сторона (блины стали выше и шире) -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M610,750L710,750L710,210L610,210Z" /> <!-- Большой -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M710,680L800,680L800,280L710,280Z" /> <!-- Средний -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M800,620L870,620L870,340L800,340Z" /> <!-- Маленький -->
+
+    </group>
 </vector>
