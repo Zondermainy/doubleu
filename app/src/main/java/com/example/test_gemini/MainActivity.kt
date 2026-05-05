@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // При запуске приложения сразу настраиваем всё для вкладки Today
         replaceFragment(TodayFragment())
-        tvTabTitle.text = "Today"
+        tvTabTitle.text = "Сегодня"
         tvDate.visibility = View.VISIBLE
         ivSettings.visibility = View.GONE
 
@@ -52,25 +52,25 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_today -> {
                     replaceFragment(TodayFragment())
-                    tvTabTitle.text = "Today"
+                    tvTabTitle.text = "Сегодня"
                     tvDate.visibility = View.VISIBLE
                     ivSettings.visibility = View.GONE
                 }
                 R.id.nav_calendar -> {
                     replaceFragment(CalendarFragment())
-                    tvTabTitle.text = "Calendar"
+                    tvTabTitle.text = "Календарь"
                     tvDate.visibility = View.GONE
                     ivSettings.visibility = View.GONE
                 }
                 R.id.nav_notes -> {
                     replaceFragment(NotesFragment())
-                    tvTabTitle.text = "Notes"
+                    tvTabTitle.text = "Тренировки"
                     tvDate.visibility = View.GONE
                     ivSettings.visibility = View.GONE
                 }
                 R.id.nav_profile -> {
                     replaceFragment(ProfileFragment())
-                    tvTabTitle.text = "Profile"
+                    tvTabTitle.text = "Профиль"
                     tvDate.visibility = View.GONE
                     ivSettings.visibility = View.VISIBLE // Показываем шестерёнку
                 }
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         // Обработка клика по шестерёнке
         ivSettings.setOnClickListener {
             replaceFragment(SettingsFragment())
-            tvTabTitle.text = "Settings"
+            tvTabTitle.text = "Настройки"
             ivSettings.visibility = View.GONE // Скрываем шестерёнку в самих настройках
         }
     }
