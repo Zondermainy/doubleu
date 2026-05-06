@@ -67,6 +67,9 @@ class WorkoutsFragment : Fragment() {
                     WorkoutItem(workout, exercises, completed, total)
                 }
                 adapter.submitList(workoutItems)
+
+                val tvEmpty = requireView().findViewById<TextView>(R.id.tv_workouts_empty)
+                tvEmpty.visibility = if (workoutItems.isEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
@@ -106,11 +109,10 @@ class WorkoutsFragment : Fragment() {
             val etName = dialogView.findViewById<EditText>(R.id.et_workout_name)
             val etSearch = dialogView.findViewById<EditText>(R.id.et_search)
             val llExercises = dialogView.findViewById<LinearLayout>(R.id.ll_exercises)
+            val btnImportPlan = dialogView.findViewById<Button>(R.id.btn_import_plan)
 
-            // Store all exercises for filtering
             val allExercises = exercises.toList()
 
-            // Create checkboxes for each exercise
             val exerciseSets = mutableMapOf<Long, EditText>()
             val exerciseReps = mutableMapOf<Long, EditText>()
 
@@ -158,10 +160,8 @@ class WorkoutsFragment : Fragment() {
                 }
             }
 
-            // Initial load
             refreshExerciseList()
 
-            // Search listener
             etSearch.addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -169,6 +169,17 @@ class WorkoutsFragment : Fragment() {
                     refreshExerciseList()
                 }
             })
+
+            if (plans.isEmpty()) {
+                btnImportPlan.isEnabled = false
+                btnImportPlan.text = "Нет доступных планов"
+            } else {
+                btnImportPlan.setOnClickListener {
+                    showPlanImportDialog(plans, selectedExercises, exerciseSets, exerciseReps) {
+                        refreshExerciseList()
+                    }
+                }
+            }
 
             AlertDialog.Builder(requireContext())
                 .setTitle("Новая тренировка")
@@ -185,6 +196,34 @@ class WorkoutsFragment : Fragment() {
                 .setNegativeButton("Отмена", null)
                 .show()
         }
+    }
+
+    private fun showPlanImportDialog(
+        plans: List<TrainingPlanEntity>,
+        selectedExercises: MutableSet<Long>,
+        exerciseSets: MutableMap<Long, EditText>,
+        exerciseReps: MutableMap<Long, EditText>,
+        onRefresh: () -> Unit
+    ) {
+        val planNames = plans.map { it.name }.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Выберите план")
+            .setItems(planNames) { _, which ->
+                val selectedPlan = plans[which]
+                lifecycleScope.launch {
+                    val planExercises = repository.getExercisesForPlanSuspend(selectedPlan.id)
+                    for (planEx in planExercises) {
+                        selectedExercises.add(planEx.id)
+                        exerciseSets[planEx.id]?.setText(planEx.sets.toString())
+                        exerciseReps[planEx.id]?.setText(planEx.reps.toString())
+                    }
+                    Toast.makeText(context, "План \"${selectedPlan.name}\" импортирован", Toast.LENGTH_SHORT).show()
+                    onRefresh()
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
     }
 
     private fun addWorkout(
@@ -231,6 +270,7 @@ class WorkoutsFragment : Fragment() {
             val etName = dialogView.findViewById<EditText>(R.id.et_workout_name)
             val etSearch = dialogView.findViewById<EditText>(R.id.et_search)
             val llExercises = dialogView.findViewById<LinearLayout>(R.id.ll_exercises)
+            val btnImportPlan = dialogView.findViewById<Button>(R.id.btn_import_plan)
 
             etName.setText(workout.workout.name)
 
@@ -297,6 +337,8 @@ class WorkoutsFragment : Fragment() {
                 }
             })
 
+            btnImportPlan.visibility = View.GONE
+
             AlertDialog.Builder(requireContext())
                 .setTitle("Редактировать тренировку")
                 .setView(dialogView)
@@ -328,7 +370,6 @@ class WorkoutsFragment : Fragment() {
             repository.deleteAllExercisesForWorkout(workout.id)
 
             val workoutExercises = exerciseIds.mapIndexed { index, exerciseId ->
-                val existingExercise = repository.getExercisesForWorkoutList(workout.id).find { it.exerciseId == exerciseId }
                 WorkoutExerciseEntity(
                     workoutId = workout.id,
                     exerciseId = exerciseId,
