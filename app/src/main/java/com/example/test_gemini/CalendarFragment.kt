@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.test_gemini.data.AppDatabase
 import com.example.test_gemini.data.AppRepository
 import com.example.test_gemini.viewmodels.CalendarViewModel
@@ -19,6 +21,11 @@ class CalendarFragment : Fragment() {
 
     private lateinit var viewModel: CalendarViewModel
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+    private lateinit var scheduleAdapter: CalendarScheduleTaskAdapter
+    private lateinit var taskAdapter: CalendarTaskAdapter
+    private lateinit var workoutDisplayAdapter: WorkoutDisplayAdapter
+    private lateinit var concatAdapter: ConcatAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,33 +51,37 @@ class CalendarFragment : Fragment() {
         viewModel = ViewModelProvider(this, factory).get(CalendarViewModel::class.java)
 
         val calendarView = view.findViewById<CalendarView>(R.id.calendarView)
-        val tvDayInfo = view.findViewById<TextView>(R.id.tv_day_info)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rv_calendar_tasks)
+
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        // Новые read‑only адаптеры
+        scheduleAdapter = CalendarScheduleTaskAdapter()
+        taskAdapter = CalendarTaskAdapter()
+        workoutDisplayAdapter = WorkoutDisplayAdapter(mutableListOf())  // остаётся без изменений
+
+        // Порядок: задачи с временем, задачи без времени, тренировки
+        concatAdapter = ConcatAdapter(scheduleAdapter, taskAdapter, workoutDisplayAdapter)
+        recyclerView.adapter = concatAdapter
+
+        // Наблюдение за данными
+        viewModel.tasksWithTime.observe(viewLifecycleOwner) { tasks ->
+            scheduleAdapter.submitList(tasks)
+        }
+        viewModel.tasksWithoutTime.observe(viewLifecycleOwner) { tasks ->
+            taskAdapter.submitList(tasks)
+        }
+        viewModel.workouts.observe(viewLifecycleOwner) { workouts ->
+            workoutDisplayAdapter.updateList(workouts)
+        }
 
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
-            loadDataForDate(selectedDate, tvDayInfo)
+            viewModel.selectDate(selectedDate)
         }
 
+        // Загрузка сегодняшней даты
         val today = dateFormat.format(Date())
-        loadDataForDate(today, tvDayInfo)
-    }
-
-    private fun loadDataForDate(date: String, tvDayInfo: TextView) {
-        viewModel.getHistoryForDate(date) { history ->
-            val displayText = if (history != null) {
-                val tasksCount = extractIdsCount(history.completedTaskIds)
-                val workoutsCount = extractIdsCount(history.completedWorkoutIds)
-                "Дата: $date\n✅ Выполнено задач: $tasksCount\n💪 Выполнено тренировок: $workoutsCount"
-            } else {
-                "Нет данных за $date"
-            }
-            tvDayInfo.text = displayText
-        }
-    }
-
-    private fun extractIdsCount(jsonArray: String): Int {
-        return if (jsonArray.isNotBlank() && jsonArray != "[]") {
-            jsonArray.removeSurrounding("[", "]").split(",").filter { it.isNotBlank() }.size
-        } else 0
+        viewModel.selectDate(today)
     }
 }
