@@ -33,10 +33,30 @@ class SettingsFragment : Fragment() {
     ) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
-                ExportImportHelper.importDatabase(requireContext(), uri)
-                Toast.makeText(requireContext(), "Данные импортированы. Рекомендуем перезапустить приложение.", Toast.LENGTH_LONG).show()
+                val success = ExportImportHelper.importDatabase(requireContext(), uri)
+                if (success) {
+                    showRestartDialog()
+                }
             }
         }
+    }
+
+    private fun showRestartDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Перезапуск необходим")
+            .setMessage("Для применения импортированных данных приложение нужно полностью перезапустить.")
+            .setPositiveButton("Перезапустить") { _, _ ->
+                restartApp()
+            }
+            .setNegativeButton("Позже", null)
+            .show()
+    }
+
+    private fun restartApp() {
+        val intent = requireContext().packageManager.getLaunchIntentForPackage(requireContext().packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        Runtime.getRuntime().exit(0)
     }
 
     override fun onCreateView(

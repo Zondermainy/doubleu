@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,19 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE = instance
                 instance
             }
+        }
+
+        fun closeDatabase() {
+            synchronized(this) {
+                INSTANCE?.close()
+                INSTANCE = null
+            }
+        }
+
+        /** Сбрасывает WAL-журнал в основной файл перед экспортом */
+        fun walCheckpoint(context: Context) {
+            val db = getDatabase(context)
+            db.query(SimpleSQLiteQuery("PRAGMA wal_checkpoint(TRUNCATE)"))
         }
     }
 
@@ -164,13 +178,19 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
+    /** Вызывается Room при деструктивной миграции (может быть пустым) */
     override fun clearAllTables() {
+        // При fallbackToDestructiveMigration() таблицы удаляются автоматически,
+        // поэтому реализация не требуется.
     }
 
+    /** Удаляет все данные из всех таблиц. Вызывайте только из фонового потока! */
     suspend fun clearAllData() {
         taskDao().deleteAll()
         workoutDao().deleteAll()
+        workoutExerciseDao().deleteAll()
         dailyHistoryDao().deleteAll()
         exerciseDao().deleteCustomExercises()
+        trainingPlanDao().deleteAll()
     }
 }

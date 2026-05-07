@@ -61,4 +61,7 @@ interface TrainingPlanDao {
 
     @Query("UPDATE training_plan_exercises SET sets = :sets, reps = :reps WHERE planId = :planId AND exerciseId = :exerciseId")
     suspend fun updateExerciseSetsReps(planId: Long, exerciseId: Long, sets: Int, reps: Int)
+
+    @Query("DELETE FROM training_plans")
+    suspend fun deleteAll()
 }
